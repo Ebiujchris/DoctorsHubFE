@@ -1,9 +1,16 @@
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
+import { getCurrentUser, logout } from '../services/auth'
 
 export default function Navbar(){
   const router = useRouter()
   const isHome = router.pathname === '/'
+  const [user, setUser] = useState(null)
+
+  useEffect(() => {
+    setUser(getCurrentUser())
+  }, [])
 
   const handleNavClick = (e, hash) => {
     if(isHome){
@@ -31,8 +38,25 @@ export default function Navbar(){
         <a href="#contact" onClick={(e) => handleNavClick(e, '#contact')} className="cursor-pointer hover:text-indigo-600">Contact</a>
       </div>
       <div className="flex items-center gap-3">
-        <Link href="/register" className="text-sm px-3 py-1 rounded hover:bg-slate-100">Register</Link>
-        <Link href="/login" className="text-sm px-3 py-1 rounded border">Login</Link>
+        {user ? (
+          <>
+            <Link href="/dashboard" className="text-sm px-3 py-1 rounded hover:bg-slate-100">Dashboard</Link>
+            <button
+              onClick={() => {
+                logout()
+                router.push('/login')
+              }}
+              className="text-sm px-3 py-1 rounded border text-red-600 hover:bg-red-50"
+            >
+              Logout
+            </button>
+          </>
+        ) : (
+          <>
+            <Link href="/register" className="text-sm px-3 py-1 rounded hover:bg-slate-100">Register</Link>
+            <Link href="/login" className="text-sm px-3 py-1 rounded border">Login</Link>
+          </>
+        )}
         <a href="#book" className="ml-2 bg-indigo-600 text-white px-4 py-2 rounded">Book Appointment</a>
       </div>
     </nav>

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Navbar from '../components/Navbar'
 import Link from 'next/link'
+import { login } from '../services/auth'
 
 export default function Login(){
   const [formData, setFormData] = useState({
@@ -10,6 +11,7 @@ export default function Login(){
   })
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -26,14 +28,15 @@ export default function Login(){
     setMessage('')
 
     try {
-      // TODO: Connect to your backend API
-      console.log('Login data:', formData)
+      const response = await login({ email: formData.email, password: formData.password })
+      console.log('Login response:', response)
       setMessage('Login successful! Redirecting...')
       setTimeout(() => {
-        window.location.href = '/'
+        window.location.href = '/dashboard'
       }, 2000)
     } catch(error){
-      setMessage('Login failed. Please check your credentials.')
+      console.error(error)
+      setMessage(error.message || 'Login failed. Please check your credentials.')
     } finally {
       setLoading(false)
     }
@@ -81,15 +84,24 @@ export default function Login(){
                 <label className="block text-sm font-medium text-slate-700 mb-1">
                   Password
                 </label>
-                <input
-                  type="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                  placeholder="••••••••"
-                />
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 pr-10"
+                    placeholder="••••••••"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-2.5 text-slate-500 hover:text-slate-700"
+                  >
+                    {showPassword ? '👁️' : '👁️‍🗨️'}
+                  </button>
+                </div>
               </div>
 
               {/* Remember Me & Forgot Password */}
