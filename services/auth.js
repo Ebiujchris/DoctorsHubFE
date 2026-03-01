@@ -1,5 +1,6 @@
 // simple auth helper for frontend
-const API_URL = 'http://localhost:3001'
+//const API_URL = 'http://localhost:3001'
+const API_URL = process.env.NEXT_PUBLIC_API_URL
 
 export async function register(data) {
   // backend validation schema does **not** expect confirmPassword,
