@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Navbar from '../components/Navbar'
 import Link from 'next/link'
-import { login } from '../services/auth'
+import { login, googleLogin } from '../services/auth'
 
 export default function Login(){
   const [formData, setFormData] = useState({
@@ -10,8 +10,44 @@ export default function Login(){
     rememberMe: false
   })
   const [loading, setLoading] = useState(false)
+  const [googleLoading, setGoogleLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+
+  // Initialize Google OAuth
+  useEffect(() => {
+    // Load Google Sign-In script
+    const script = document.createElement('script')
+    script.src = 'https://accounts.google.com/gsi/client'
+    script.async = true
+    script.defer = true
+    script.onload = () => {
+      if (window.google) {
+        window.google.accounts.id.initialize({
+          client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '',
+          callback: window.handleGoogleCallback,
+        })
+      }
+    }
+    document.body.appendChild(script)
+
+    // Handle Google callback
+    window.handleGoogleCallback = async (credentialResponse) => {
+      try {
+        const { credential } = credentialResponse
+        if (credential) {
+          const response = await googleLogin(credential)
+          setMessage('Login successful! Redirecting...')
+          setTimeout(() => {
+            window.location.href = '/dashboard'
+          }, 2000)
+        }
+      } catch (error) {
+        console.error('Callback error:', error)
+        setMessage(error.message || 'Google login failed.')
+      }
+    }
+  }, [])
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -29,16 +65,57 @@ export default function Login(){
 
     try {
       const response = await login({ email: formData.email, password: formData.password })
-      console.log('Login response:', response)
+      console.log('✅ Login response:', response)
+      console.log('✅ Token after login:', localStorage.getItem('dh_token') ? '✅ Found' : '❌ Missing')
       setMessage('Login successful! Redirecting...')
       setTimeout(() => {
         window.location.href = '/dashboard'
       }, 2000)
     } catch(error){
-      console.error(error)
+      console.error('❌ Login error:', error)
       setMessage(error.message || 'Login failed. Please check your credentials.')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleGoogleLogin = async () => {
+    setGoogleLoading(true)
+    setMessage('')
+
+    try {
+      // Render Google button to trigger sign-in
+      if (window.google) {
+        window.google.accounts.id.renderButton(
+          document.getElementById('google-button-container'),
+          {
+            type: 'standard',
+            size: 'large',
+            text: 'signin_with',
+            locale: 'en_US',
+            width: '100%',
+          }
+        )
+      }
+    } catch (error) {
+      console.error('Google login error:', error)
+      setMessage('Google login not available. Please use email login.')
+    } finally {
+      setGoogleLoading(false)
+    }
+  }
+
+  const handleRenderGoogleButton = () => {
+    if (window.google) {
+      window.google.accounts.id.renderButton(
+        document.getElementById('google-button-container'),
+        {
+          theme: 'outline',
+          size: 'large',
+          text: 'signin_with',
+          width: '100%',
+        }
+      )
     }
   }
 
@@ -138,10 +215,19 @@ export default function Login(){
               <div className="flex-1 h-px bg-slate-300"></div>
             </div>
 
-            {/* Social Login (Optional) */}
-            <button className="w-full border border-slate-300 py-2 rounded-lg font-semibold text-slate-700 hover:bg-slate-50 transition">
-              Continue with Google
+            {/* Social Login - Google OAuth */}
+            <button
+              type="button"
+              onClick={handleRenderGoogleButton}
+              disabled={googleLoading}
+              className="w-full border border-slate-300 py-2 rounded-lg font-semibold text-slate-700 hover:bg-slate-50 transition flex items-center justify-center gap-2 disabled:opacity-50"
+            >
+              <span>🔵</span>
+              {googleLoading ? 'Signing in...' : 'Continue with Google'}
             </button>
+            
+            {/* Hidden Google Button Container */}
+            <div id="google-button-container" className="hidden mt-2"></div>
 
             {/* Register Link */}
             <p className="text-center text-slate-600 text-sm mt-6">

@@ -2,11 +2,15 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import Navbar from '../components/Navbar'
 import { getCurrentUser } from '../services/auth'
+import { fetchFeaturedDoctors_Combined } from '../services/api'
 
 export default function Dashboard() {
+  const router = useRouter()
   const [user, setUser] = useState(null)
   const [showNotifications, setShowNotifications] = useState(false)
-  const router = useRouter()
+  const [providers, setProviders] = useState([])
+  const [loadingProviders, setLoadingProviders] = useState(false)
+  const [providersError, setProvidersError] = useState('')
 
   useEffect(() => {
     const u = getCurrentUser()
@@ -15,6 +19,24 @@ export default function Dashboard() {
       return
     }
     setUser(u)
+
+    // Fetch healthcare providers for patients
+    if (u.role === 'patient') {
+      const fetchProviders = async () => {
+        try {
+          setLoadingProviders(true)
+          const data = await fetchFeaturedDoctors_Combined()
+          setProviders(data)
+          setProvidersError('')
+        } catch (error) {
+          console.error('Error fetching providers:', error)
+          setProvidersError('Unable to load healthcare providers')
+        } finally {
+          setLoadingProviders(false)
+        }
+      }
+      fetchProviders()
+    }
   }, [router])
 
   if (!user) {
@@ -31,7 +53,7 @@ export default function Dashboard() {
           <p className="text-slate-600 mt-1">Welcome to your DoctorsHub account</p>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
           {/* welcome card */}
           <div className="bg-white rounded-lg shadow p-6">
             {user.role === 'patient' ? (
@@ -55,24 +77,23 @@ export default function Dashboard() {
             )}
           </div>
 
-          {/* placeholder panel */}
-          <div className="bg-white rounded-lg shadow p-6">
+          {/* appointments card */}
+          <button
+            onClick={() => router.push(user.role === 'patient' ? '/appointments' : '/provider-appointments')}
+            className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow cursor-pointer text-left"
+          >
             {user.role === 'patient' ? (
               <>
-                <h3 className="font-medium text-slate-700 mb-2">Upcoming Appointments</h3>
-                <ul className="list-disc pl-5 text-slate-700">
-                  <li>No appointments yet.</li>
-                </ul>
+                <h3 className="font-medium text-slate-700 mb-2">📅 My Appointments</h3>
+                <p className="text-slate-600 text-sm">View and track your bookings</p>
               </>
             ) : (
               <>
-                <h3 className="font-medium text-slate-700 mb-2">Patient Requests</h3>
-                <ul className="list-disc pl-5 text-slate-700">
-                  <li>No patients scheduled.</li>
-                </ul>
+                <h3 className="font-medium text-slate-700 mb-2">📋 Appointment Requests</h3>
+                <p className="text-slate-600 text-sm">Approve or reject patient requests</p>
               </>
             )}
-          </div>
+          </button>
 
           {/* notifications card */}
           <div
@@ -161,7 +182,98 @@ export default function Dashboard() {
             </div>
           </div>
         )}
+
+        {/* Healthcare Providers Section - For Patients Only */}
+        {user.role === 'patient' && (
+          <section className="mt-12">
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold text-slate-800 mb-2">Healthcare Providers</h2>
+              <p className="text-slate-600">Find and book appointments with our verified healthcare professionals</p>
+            </div>
+
+            {providersError && (
+              <div className="bg-red-50 border border-red-200 px-6 py-4 rounded-lg mb-6">
+                <p className="text-red-800 font-medium">{providersError}</p>
+              </div>
+            )}
+
+            {loadingProviders ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[1, 2, 3, 4, 5, 6].map(i => (
+                  <div key={i} className="bg-white rounded-xl shadow-md p-6 animate-pulse">
+                    <div className="w-20 h-20 bg-slate-200 rounded-full mx-auto mb-4"></div>
+                    <div className="h-4 bg-slate-200 rounded w-3/4 mx-auto mb-2"></div>
+                    <div className="h-3 bg-slate-200 rounded w-1/2 mx-auto mb-4"></div>
+                    <div className="space-y-2">
+                      <div className="h-3 bg-slate-200 rounded"></div>
+                      <div className="h-3 bg-slate-200 rounded w-4/5"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : providers.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {providers.map(provider => (
+                  <div key={provider.id} className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group">
+                    {/* Provider Image */}
+                    <div className="relative h-48 bg-gradient-to-br from-indigo-100 to-blue-100 overflow-hidden">
+                      <img
+                        src={provider.image}
+                        alt={provider.name}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      />
+                      <div className="absolute top-3 right-3 bg-white rounded-full px-3 py-1 flex items-center gap-1 shadow-md">
+                        <span className="text-yellow-400">⭐</span>
+                        <span className="text-sm font-semibold text-slate-700">{provider.rating}</span>
+                      </div>
+                    </div>
+
+                    {/* Provider Info */}
+                    <div className="p-5">
+                      <h3 className="text-lg font-bold text-slate-800 mb-1">{provider.name}</h3>
+                      <p className="text-indigo-600 font-medium text-sm mb-3">{provider.specialty}</p>
+
+                      {/* Stats */}
+                      <div className="grid grid-cols-2 gap-3 mb-4 pb-4 border-b border-slate-200 text-xs">
+                        <div>
+                          <p className="text-slate-500 font-medium">Experience</p>
+                          <p className="text-slate-700 font-semibold text-sm">{provider.experience}</p>
+                        </div>
+                        <div>
+                          <p className="text-slate-500 font-medium">Response</p>
+                          <p className="text-slate-700 font-semibold text-sm">{provider.responseTime}</p>
+                        </div>
+                      </div>
+
+                      {/* Reviews */}
+                      <p className="text-xs text-slate-600 mb-4">
+                        <span className="font-semibold text-slate-700">{provider.reviews}</span> patient reviews
+                      </p>
+
+                      {/* Book Now Button */}
+                      <button
+                        onClick={() => {
+                          localStorage.setItem('selectedProvider', JSON.stringify(provider))
+                          router.push(`/book-appointment/${provider.id}`)
+                        }}
+                        className="w-full bg-gradient-to-r from-indigo-600 to-blue-600 text-white font-semibold py-2.5 rounded-lg hover:from-indigo-700 hover:to-blue-700 transition-all duration-300 shadow-md hover:shadow-lg"
+                      >
+                        Book Appointment
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="bg-slate-50 rounded-xl p-12 text-center">
+                <p className="text-slate-600 text-lg mb-4">No healthcare providers available at the moment</p>
+                <p className="text-slate-500">Check back soon for new providers</p>
+              </div>
+            )}
+          </section>
+        )}
       </main>
     </div>
   )
 }
+

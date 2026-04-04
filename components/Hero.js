@@ -1,37 +1,35 @@
 import { useState } from 'react'
+import SearchBar from './SearchBar'
 
 export default function Hero(){
   const [role,setRole] = useState('Patient')
   return (
-    <section id="home" className="hero-bg min-h-[72vh] flex items-center">
-      <div className="container mx-auto px-6 py-20">
-        <div className="max-w-4xl text-white">
-          <h1 className="text-4xl md:text-5xl font-bold">Care when you need it — online or in-person</h1>
-          <p className="mt-4 text-lg text-slate-100/90">Book consultations with doctors, nurses or carers. Easy scheduling, secure video calls and local clinic bookings.</p>
+    <section id="home" className="hero-bg min-h-[80vh] sm:min-h-[90vh] flex items-center py-16 sm:py-20">
+      <div className="container mx-auto px-4 sm:px-6 xl:px-8">
+        <div className="max-w-4xl mx-auto">
+          {/* Heading */}
+          <div className="max-w-3xl sm:max-w-4xl lg:max-w-2xl text-white mb-12">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight mb-4">Care when you need it — online or in-person</h1>
+            <p className="mt-4 text-base sm:text-lg text-slate-100/90">Book consultations with doctors, nurses or carers. Easy scheduling, secure video calls and local clinic bookings.</p>
+          </div>
 
-          <div className="mt-6 bg-white/10 p-4 rounded-lg glass">
-            <div className="flex flex-col md:flex-row md:items-center gap-3">
-              <select value={role} onChange={(e)=>setRole(e.target.value)} className="px-3 py-2 rounded bg-white/20 text-white">
-                <option>Patient</option>
-                <option>Doctor</option>
-                <option>Psychiatrist</option>
-                <option>Nurse</option>
-                <option>Carer</option>
-              </select>
+          {/* Search Bar */}
+          <SearchBar />
 
-              <input type="date" className="px-3 py-2 rounded bg-white/20 text-white" />
-
-              <select className="px-3 py-2 rounded bg-white/20 text-white">
-                <option>Online Consultation</option>
-                <option>Mental Health Consultation</option>
-                <option>Clinic - Central</option>
-                <option>Clinic - South</option>
-                <option>At-home Visit</option>
-              </select>
-
-              <button id="book" className="ml-auto bg-indigo-600 px-4 py-2 rounded text-white">Book Appointment</button>
+          {/* Quick Info */}
+          <div className="mt-8 flex flex-col sm:flex-row gap-6 text-white text-sm">
+            <div className="flex items-center gap-2">
+              <span className="text-2xl">✓</span>
+              <span>Verified Doctors</span>
             </div>
-            <div className="mt-2 text-sm text-white/80">Selected role: <strong>{role}</strong></div>
+            <div className="flex items-center gap-2">
+              <span className="text-2xl">⚡</span>
+              <span>Quick Booking</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-2xl">🔒</span>
+              <span>Secure & Private</span>
+            </div>
           </div>
         </div>
       </div>

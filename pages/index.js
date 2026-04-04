@@ -1,8 +1,10 @@
 import Navbar from '../components/Navbar'
 import Hero from '../components/Hero'
-import Services from '../components/Services'
-import About from '../components/About'
-import Contact from '../components/Contact'
+import Specialties from '../components/Specialties'
+import FeaturedDoctors from '../components/FeaturedDoctors'
+import HowItWorks from '../components/HowItWorks'
+import Testimonials from '../components/Testimonials'
+import CTASection from '../components/CTASection'
 
 export default function Home(){
   return (
@@ -10,13 +12,27 @@ export default function Home(){
       <Navbar />
       <main>
         <Hero />
-        <Services />
-        <About />
-        <Contact />
+        <Specialties />
+        <FeaturedDoctors />
+        <HowItWorks />
+        <Testimonials />
+        <CTASection />
       </main>
 
-      <footer className="py-6 text-center text-sm text-slate-600">
-        © {new Date().getFullYear()} DoctorsHub — Trusted care for everyone.
+      <footer className="py-8 px-4 sm:px-6 lg:px-8 bg-slate-800 text-slate-300 text-center">
+        <div className="container mx-auto max-w-6xl">
+          <div className="mb-6">
+            <h3 className="text-white font-semibold mb-2">DoctorsHub</h3>
+            <p className="text-sm text-slate-400">Trusted healthcare booking platform connecting patients with qualified professionals.</p>
+          </div>
+          <div className="flex justify-center gap-6 mb-6 text-sm">
+            <a href="#" className="hover:text-white transition">About</a>
+            <a href="#" className="hover:text-white transition">Terms</a>
+            <a href="#" className="hover:text-white transition">Privacy</a>
+            <a href="#" className="hover:text-white transition">Contact</a>
+          </div>
+          <p className="text-xs text-slate-500"> © {new Date().getFullYear()} DoctorsHub — Trusted care for everyone.</p>
+        </div>
       </footer>
     </div>
   )
