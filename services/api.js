@@ -273,3 +273,44 @@ export const fetchProviderById = async (id) => {
     throw error
   }
 }
+
+// ── Notifications ──────────────────────────────────────────────────────────────
+
+export const fetchNotifications = async (token) => {
+  const res = await fetch(`${API_BASE}/notifications`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  if (!res.ok) throw new Error('Failed to fetch notifications')
+  return res.json()
+}
+
+export const fetchUnreadCount = async (token) => {
+  const res = await fetch(`${API_BASE}/notifications/unread-count`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  if (!res.ok) return { count: 0 }
+  return res.json()
+}
+
+export const markNotificationRead = async (id, token) => {
+  await fetch(`${API_BASE}/notifications/${id}/read`, {
+    method: 'PATCH',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+}
+
+export const markAllNotificationsRead = async (token) => {
+  await fetch(`${API_BASE}/notifications/mark-all-read`, {
+    method: 'PATCH',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+}
+
+export const cancelBooking = async (bookingId, token) => {
+  const res = await fetch(`${API_BASE}/bookings/${bookingId}/cancel`, {
+    method: 'PATCH',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  if (!res.ok) throw new Error('Failed to cancel booking')
+  return res.json()
+}
