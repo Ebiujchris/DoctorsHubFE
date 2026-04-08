@@ -13,3 +13,9 @@
   background: rgba(255,255,255,0.06);
   backdrop-filter: blur(6px);
 }
+
+/* Dark mode base overrides */
+.dark body {
+  background-color: #0f172a;
+  color: #e2e8f0;
+}

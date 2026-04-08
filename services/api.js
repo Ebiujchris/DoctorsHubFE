@@ -39,7 +39,8 @@ export const fetchFeaturedDoctors = async () => {
       reviews: doc.reviews || 0,
       image: doc.profilePicture || `https://i.pravatar.cc/150?img=${Math.random() * 50}`,
       experience: doc.experience || 'N/A',
-      responseTime: doc.responseTime || '< 2 hours'
+      responseTime: doc.responseTime || '< 2 hours',
+      fees: doc.fees || null
     }))
   } catch (error) {
     console.error('Error fetching featured doctors:', error)
@@ -67,7 +68,8 @@ export const fetchFeaturedNurses = async () => {
       reviews: nurse.reviews || 0,
       image: nurse.profilePicture || `https://i.pravatar.cc/150?img=${Math.random() * 50}`,
       experience: nurse.experience || 'N/A',
-      responseTime: nurse.responseTime || '< 2 hours'
+      responseTime: nurse.responseTime || '< 2 hours',
+      fees: nurse.fees || null
     }))
   } catch (error) {
     console.error('Error fetching featured nurses:', error)
@@ -94,7 +96,8 @@ export const fetchFeaturedCarers = async () => {
       reviews: carer.reviews || 0,
       image: carer.profilePicture || `https://i.pravatar.cc/150?img=${Math.random() * 50}`,
       experience: carer.experience || 'N/A',
-      responseTime: carer.responseTime || '< 2 hours'
+      responseTime: carer.responseTime || '< 2 hours',
+      fees: carer.fees || null
     }))
   } catch (error) {
     console.error('Error fetching featured carers:', error)
@@ -121,7 +124,8 @@ export const fetchFeaturedPsychiatrists = async () => {
       reviews: psychiatrist.reviews || 0,
       image: psychiatrist.profilePicture || `https://i.pravatar.cc/150?img=${Math.random() * 50}`,
       experience: psychiatrist.experience || 'N/A',
-      responseTime: psychiatrist.responseTime || '< 2 hours'
+      responseTime: psychiatrist.responseTime || '< 2 hours',
+      fees: psychiatrist.fees || null
     }))
   } catch (error) {
     console.error('Error fetching featured psychiatrists:', error)
@@ -139,8 +143,8 @@ export const fetchFeaturedDoctors_Combined = async () => {
       fetchFeaturedCarers()
     ])
     
-    // Return up to 6 providers total, mixed types
-    return [...doctors, ...nurses, ...psychiatrists, ...carers].slice(0, 6)
+    // Return all providers, mixed types
+    return [...doctors, ...nurses, ...psychiatrists, ...carers]
   } catch (error) {
     console.error('Error fetching featured providers:', error)
     return []
