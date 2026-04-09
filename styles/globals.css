@@ -4,7 +4,7 @@
 
 /* Hero background using unsplash placeholder image */
 .hero-bg {
-  background-image: linear-gradient(to right, rgba(6,21,34,0.6), rgba(6,21,34,0.2)), url('https://images.unsplash.com/photo-1587502537745-4e1a7f1b3f2b?q=80&w=1600&auto=format&fit=crop&ixlib=rb-4.0.3&s=');
+  background-image: url('https://images.unsplash.com/photo-1587502537745-4e1a7f1b3f2b?q=80&w=1600&auto=format&fit=crop&ixlib=rb-4.0.3&s=');
   background-size: cover;
   background-position: center;
 }

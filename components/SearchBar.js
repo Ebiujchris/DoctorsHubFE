@@ -68,7 +68,7 @@ export default function SearchBar({ onSearch }) {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="w-full bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors sm:col-span-2"
         >
           {loading ? 'Searching...' : 'Search Doctors'}
         </button>

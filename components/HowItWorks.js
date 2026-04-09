@@ -27,11 +27,11 @@ export default function HowItWorks() {
   ]
 
   return (
-    <section className="py-20 bg-gradient-to-b from-white to-slate-50">
+    <section className="py-20 bg-slate-50 dark:bg-slate-800">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold text-slate-800 mb-4">How It Works</h2>
-          <p className="text-lg text-slate-600">Book your healthcare appointment in 4 simple steps</p>
+          <h2 className="text-3xl sm:text-4xl font-bold text-slate-800 dark:text-white mb-4">How It Works</h2>
+          <p className="text-lg text-slate-600 dark:text-slate-400">Book your healthcare appointment in 4 simple steps</p>
         </div>
 
         <div className="max-w-5xl mx-auto">
@@ -45,7 +45,7 @@ export default function HowItWorks() {
                 )}
 
                 {/* Step Card */}
-                <div className="bg-white p-8 rounded-xl shadow-md border border-slate-100 hover:shadow-lg hover:border-indigo-200 transition-all relative z-10">
+                <div className="bg-white dark:bg-slate-700 p-8 rounded-xl shadow-lg border border-slate-100 dark:border-slate-600 hover:shadow-xl hover:shadow-indigo-500/20 hover:border-indigo-400 dark:hover:border-indigo-500 transition-all relative z-10">
                   {/* Step Number Circle */}
                   <div className="w-16 h-16 bg-indigo-600 text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">
                     {step.number}
@@ -55,31 +55,31 @@ export default function HowItWorks() {
                   <div className="text-5xl text-center mb-4">{step.icon}</div>
 
                   {/* Step Info */}
-                  <h3 className="text-xl font-semibold text-slate-800 text-center mb-2">{step.title}</h3>
-                  <p className="text-slate-600 text-center text-sm">{step.description}</p>
+                  <h3 className="text-xl font-semibold text-slate-800 dark:text-white text-center mb-2">{step.title}</h3>
+                  <p className="text-slate-600 dark:text-slate-400 text-center text-sm">{step.description}</p>
                 </div>
               </div>
             ))}
           </div>
 
           {/* Benefits */}
-          <div className="bg-indigo-50 border-2 border-indigo-200 rounded-xl p-8">
-            <h3 className="text-2xl font-bold text-slate-800 mb-6 text-center">Why Choose DoctorsHub?</h3>
+          <div className="bg-indigo-50 dark:bg-slate-700 border-2 border-indigo-200 dark:border-indigo-600 rounded-xl p-8">
+            <h3 className="text-2xl font-bold text-slate-800 dark:text-white mb-6 text-center">Why Choose DoctorsHub?</h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               <div className="text-center">
                 <p className="text-4xl mb-2">✓</p>
-                <h4 className="font-semibold text-slate-800 mb-2">Verified Doctors</h4>
-                <p className="text-slate-600 text-sm">All healthcare professionals are verified and licensed</p>
+                <h4 className="font-semibold text-slate-800 dark:text-white mb-2">Verified Doctors</h4>
+                <p className="text-slate-600 dark:text-slate-400 text-sm">All healthcare professionals are verified and licensed</p>
               </div>
               <div className="text-center">
                 <p className="text-4xl mb-2">⚡</p>
-                <h4 className="font-semibold text-slate-800 mb-2">Quick Booking</h4>
-                <p className="text-slate-600 text-sm">Reserve appointments in just a few clicks</p>
+                <h4 className="font-semibold text-slate-800 dark:text-white mb-2">Quick Booking</h4>
+                <p className="text-slate-600 dark:text-slate-400 text-sm">Reserve appointments in just a few clicks</p>
               </div>
               <div className="text-center">
                 <p className="text-4xl mb-2">🔒</p>
-                <h4 className="font-semibold text-slate-800 mb-2">Secure & Private</h4>
-                <p className="text-slate-600 text-sm">Your data is encrypted and completely confidential</p>
+                <h4 className="font-semibold text-slate-800 dark:text-white mb-2">Secure & Private</h4>
+                <p className="text-slate-600 dark:text-slate-400 text-sm">Your data is encrypted and completely confidential</p>
               </div>
             </div>
           </div>

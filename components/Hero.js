@@ -4,8 +4,11 @@ import SearchBar from './SearchBar'
 export default function Hero(){
   const [role,setRole] = useState('Patient')
   return (
-    <section id="home" className="hero-bg min-h-[80vh] sm:min-h-[90vh] flex items-center py-16 sm:py-20">
-      <div className="container mx-auto px-4 sm:px-6 xl:px-8">
+    <section id="home" className="hero-bg min-h-[80vh] sm:min-h-[90vh] flex items-center py-16 sm:py-20 relative">
+      {/* Responsive overlay */}
+      <div className="absolute inset-0 bg-gradient-to-r from-slate-900/40 to-slate-900/10 dark:from-slate-900/70 dark:to-slate-900/30"></div>
+      
+      <div className="container mx-auto px-4 sm:px-6 xl:px-8 relative z-10">
         <div className="max-w-4xl mx-auto">
           {/* Heading */}
           <div className="max-w-3xl sm:max-w-4xl lg:max-w-2xl text-white mb-12">

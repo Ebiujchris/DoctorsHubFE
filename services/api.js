@@ -151,38 +151,97 @@ export const fetchFeaturedDoctors_Combined = async () => {
   }
 }
 
-// Search doctors/nurses/carers by specialty
+// Search doctors/nurses/carers by specialty - Updated: 2024-04-09
 export const searchDoctors = async (specialty) => {
   try {
+    console.log('🔍 [NEW VERSION] Searching for specialty:', specialty)
+    
     if (!specialty) {
       throw new Error('Specialty is required')
     }
 
-    // Build query string
-    const params = new URLSearchParams()
-    params.append('specialty', specialty)
+    // TEMPORARY: Use mock data since backend endpoints aren't ready
+    const mockProviders = [
+      {
+        id: 1,
+        name: 'Dr. Sarah Johnson',
+        specialty: 'General Practitioner',
+        rating: 4.8,
+        reviews: 127,
+        image: 'https://i.pravatar.cc/150?img=1',
+        experience: '8 years',
+        responseTime: '< 1 hour'
+      },
+      {
+        id: 2,
+        name: 'Dr. Michael Chen',
+        specialty: 'Cardiologist',
+        rating: 4.9,
+        reviews: 89,
+        image: 'https://i.pravatar.cc/150?img=2',
+        experience: '12 years',
+        responseTime: '< 2 hours'
+      },
+      {
+        id: 3,
+        name: 'Dr. Emily Rodriguez',
+        specialty: 'Psychiatrist',
+        rating: 4.7,
+        reviews: 156,
+        image: 'https://i.pravatar.cc/150?img=3',
+        experience: '6 years',
+        responseTime: '< 30 minutes'
+      },
+      {
+        id: 4,
+        name: 'Dr. James Wilson',
+        specialty: 'Dentist',
+        rating: 4.6,
+        reviews: 203,
+        image: 'https://i.pravatar.cc/150?img=4',
+        experience: '15 years',
+        responseTime: '< 4 hours'
+      },
+      {
+        id: 5,
+        name: 'Nurse Lisa Thompson',
+        specialty: 'Nurse',
+        rating: 4.9,
+        reviews: 78,
+        image: 'https://i.pravatar.cc/150?img=5',
+        experience: '5 years',
+        responseTime: '< 1 hour'
+      },
+      {
+        id: 6,
+        name: 'Maria Garcia',
+        specialty: 'Home Carer',
+        rating: 4.8,
+        reviews: 45,
+        image: 'https://i.pravatar.cc/150?img=6',
+        experience: '3 years',
+        responseTime: '< 2 hours'
+      }
+    ]
 
-    const response = await fetch(`${API_BASE}/users/search?${params.toString()}`)
+    console.log('👥 Using mock providers:', mockProviders.length)
+    
+    // Filter by specialty (case-insensitive partial match)
+    const filtered = mockProviders.filter(provider => {
+      const providerSpecialty = (provider.specialty || '').toLowerCase()
+      const searchSpecialty = specialty.toLowerCase()
+      const matches = providerSpecialty.includes(searchSpecialty) || 
+                     searchSpecialty.includes(providerSpecialty) ||
+                     providerSpecialty === searchSpecialty
+      
+      console.log(`🔍 Checking ${provider.name} (${provider.specialty}) against ${specialty}: ${matches}`)
+      return matches
+    })
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-
-    const providers = await response.json()
-
-    // Transform backend data
-    return providers.map(provider => ({
-      id: provider.id,
-      name: `${provider.firstName} ${provider.lastName}`,
-      specialty: provider.specialty || provider.role,
-      rating: provider.rating || 4.8,
-      reviews: provider.reviews || 0,
-      image: provider.profilePicture || `https://i.pravatar.cc/150?img=${Math.random() * 50}`,
-      experience: provider.experience || 'N/A',
-      responseTime: provider.responseTime || '< 2 hours'
-    }))
+    console.log('✅ Filtered results:', filtered.length, filtered)
+    return filtered
   } catch (error) {
-    console.error('Error searching providers:', error)
+    console.error('❌ Error searching providers:', error)
     throw error
   }
 }
@@ -218,32 +277,16 @@ export const fetchNearbyClinics = async (location) => {
 // Fetch testimonials (can be from database or mock)
 export const fetchTestimonials = async () => {
   try {
-    return [
-      {
-        id: 1,
-        name: 'John Smith',
-        feedback: 'Excellent service! The doctor was very professional and attentive.',
-        rating: 5,
-        date: '2 weeks ago'
-      },
-      {
-        id: 2,
-        name: 'Maria Garcia',
-        feedback: 'Quick response and very helpful. Highly recommend DoctorsHub!',
-        rating: 5,
-        date: '1 month ago'
-      },
-      {
-        id: 3,
-        name: 'Ahmed Hassan',
-        feedback: 'Great experience overall. Will use again for sure.',
-        rating: 4,
-        date: '3 weeks ago'
-      }
-    ]
+    const response = await fetch(`${API_BASE}/testimonials`)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    const data = await response.json()
+    return data
   } catch (error) {
     console.error('Error fetching testimonials:', error)
-    throw error
+    // Fallback to empty array if API fails
+    return []
   }
 }
 
@@ -317,4 +360,91 @@ export const cancelBooking = async (bookingId, token) => {
   })
   if (!res.ok) throw new Error('Failed to cancel booking')
   return res.json()
+}
+// ── Testimonials ──────────────────────────────────────────────────────────────
+
+// Submit a testimonial about DoctorsHub platform
+export const submitTestimonial = async (testimonialData, token) => {
+  try {
+    const response = await fetch(`${API_BASE}/testimonials`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(testimonialData)
+    })
+    
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(errorData.message || `HTTP error! status: ${response.status}`)
+    }
+    
+    return await response.json()
+  } catch (error) {
+    console.error('Error submitting testimonial:', error)
+    throw error
+  }
+}
+
+// Get user's own testimonial
+export const getUserTestimonial = async (token) => {
+  try {
+    const response = await fetch(`${API_BASE}/testimonials/mine`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    
+    const data = await response.json()
+    return data.testimonial
+  } catch (error) {
+    console.error('Error fetching user testimonial:', error)
+    return null
+  }
+}
+
+// Admin: Approve a testimonial (for testing)
+export const approveTestimonial = async (testimonialId, token) => {
+  try {
+    const response = await fetch(`${API_BASE}/testimonials/${testimonialId}/approve`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    
+    return await response.json()
+  } catch (error) {
+    console.error('Error approving testimonial:', error)
+    throw error
+  }
+}
+
+// Admin: Get all testimonials (for testing)
+export const getAllTestimonials = async (token) => {
+  try {
+    const response = await fetch(`${API_BASE}/testimonials/admin/all`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    
+    return await response.json()
+  } catch (error) {
+    console.error('Error fetching all testimonials:', error)
+    throw error
+  }
 }

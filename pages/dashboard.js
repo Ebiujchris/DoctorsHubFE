@@ -18,10 +18,10 @@ const typeColor = {
 }
 
 const STATUS = {
-  pending:   { label: 'Pending',   cls: 'bg-yellow-100 text-yellow-800', dot: 'bg-yellow-400' },
-  confirmed: { label: 'Confirmed', cls: 'bg-green-100 text-green-800',   dot: 'bg-green-500'  },
-  rejected:  { label: 'Rejected',  cls: 'bg-red-100 text-red-800',       dot: 'bg-red-500'    },
-  cancelled: { label: 'Cancelled', cls: 'bg-slate-100 text-slate-600',   dot: 'bg-slate-400'  },
+  pending:   { label: 'Pending',   cls: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300', dot: 'bg-yellow-400' },
+  confirmed: { label: 'Confirmed', cls: 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300',   dot: 'bg-green-500'  },
+  rejected:  { label: 'Rejected',  cls: 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300',       dot: 'bg-red-500'    },
+  cancelled: { label: 'Cancelled', cls: 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300',   dot: 'bg-slate-400'  },
 }
 
 function Badge({ status }) {
@@ -804,6 +804,12 @@ export default function Dashboard() {
     const u = getCurrentUser()
     if (!u) { router.replace('/login'); return }
     setUser(u)
+    
+    // Handle URL parameters for tab navigation
+    if (router.query.tab) {
+      setTab(router.query.tab)
+    }
+    
     loadAppointments()
     loadNotifications()
     if (u.role === 'patient') loadProviders()
@@ -994,8 +1000,8 @@ export default function Dashboard() {
   const PatientOverview = () => (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-800">Good {getGreeting()}, {user.firstName} 👋</h1>
-        <p className="text-slate-500 mt-1">Here's your health activity at a glance.</p>
+        <h1 className="text-2xl font-bold text-slate-800 dark:text-white">Good {getGreeting()}, {user.firstName} 👋</h1>
+        <p className="text-slate-500 dark:text-slate-400 mt-1">Here's your health activity at a glance.</p>
       </div>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
@@ -1099,10 +1105,10 @@ export default function Dashboard() {
         {/* stat cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { label: 'Total Patients',  value: uniquePatients.length,  icon: '👥', color: 'bg-blue-50 text-blue-700'    },
-            { label: 'Pending',         value: pending.length,         icon: '⏳', color: 'bg-yellow-50 text-yellow-700' },
-            { label: 'Confirmed',       value: confirmed.length,       icon: '✅', color: 'bg-emerald-50 text-emerald-700'},
-            { label: 'Today',           value: todayApts.length,       icon: '📅', color: 'bg-indigo-50 text-indigo-700' },
+            { label: 'Total Patients',  value: uniquePatients.length,  icon: '👥', color: 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'    },
+            { label: 'Pending',         value: pending.length,         icon: '⏳', color: 'bg-yellow-50 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300' },
+            { label: 'Confirmed',       value: confirmed.length,       icon: '✅', color: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300'},
+            { label: 'Today',           value: todayApts.length,       icon: '📅', color: 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' },
           ].map(c => (
             <div key={c.label} className={`rounded-2xl p-5 ${c.color} shadow-sm`}>
               <p className="text-2xl mb-1">{c.icon}</p>
@@ -1135,18 +1141,18 @@ export default function Dashboard() {
             </div>
           </div>
         ) : (
-          <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 flex items-center gap-4">
+          <div className="bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-700 rounded-2xl p-5 flex items-center gap-4">
             <span className="text-3xl">🎉</span>
             <div>
-              <p className="font-semibold text-emerald-800">All caught up!</p>
-              <p className="text-emerald-600 text-sm">No pending appointment requests right now.</p>
+              <p className="font-semibold text-emerald-800 dark:text-emerald-300">All caught up!</p>
+              <p className="text-emerald-600 dark:text-emerald-400 text-sm">No pending appointment requests right now.</p>
             </div>
           </div>
         )}
 
         {/* quick actions */}
         <div>
-          <h2 className="text-base font-semibold text-slate-700 mb-3">Quick Actions</h2>
+          <h2 className="text-base font-semibold text-slate-700 dark:text-slate-200 mb-3">Quick Actions</h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
               { label: 'View Requests',  icon: '📋', action: () => setTab('requests')       },
@@ -1155,7 +1161,7 @@ export default function Dashboard() {
               { label: 'Notifications',  icon: '🔔', action: handleOpenNotifications        },
             ].map(q => (
               <button key={q.label} onClick={q.action}
-                className="flex flex-col items-center gap-2 p-4 bg-white border border-slate-200 rounded-2xl hover:border-emerald-400 hover:shadow-md transition text-sm font-medium text-slate-700">
+                className="flex flex-col items-center gap-2 p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl hover:border-emerald-400 hover:shadow-md transition text-sm font-medium text-slate-700 dark:text-slate-200">
                 <span className="text-2xl">{q.icon}</span>{q.label}
               </button>
             ))}
@@ -1166,8 +1172,8 @@ export default function Dashboard() {
         {todayApts.length > 0 && (
           <div>
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-base font-semibold text-slate-700">Today's Schedule</h2>
-              <button onClick={() => setTab('schedule')} className="text-sm text-emerald-600 hover:underline">View all</button>
+              <h2 className="text-base font-semibold text-slate-700 dark:text-slate-200">Today's Schedule</h2>
+              <button onClick={() => setTab('schedule')} className="text-sm text-emerald-600 dark:text-emerald-400 hover:underline">View all</button>
             </div>
             <div className="space-y-3">
               {todayApts.map(a => <ProviderAptCard key={a.id} apt={a} compact />)}
@@ -1180,20 +1186,20 @@ export default function Dashboard() {
 
   // ── PATIENT appointment card ──────────────────────────────────────────────────
   const PatientAptCard = ({ apt, compact = false }) => (
-    <div className={`bg-white border border-slate-200 rounded-2xl hover:shadow-md transition ${compact ? 'p-4' : 'p-5'}`}>
+    <div className={`bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl hover:shadow-md transition ${compact ? 'p-4' : 'p-5'}`}>
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-700 font-bold text-sm flex-shrink-0">
+          <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/50 rounded-full flex items-center justify-center text-indigo-700 dark:text-indigo-300 font-bold text-sm flex-shrink-0">
             {apt.provider?.firstName?.[0]}{apt.provider?.lastName?.[0]}
           </div>
           <div className="min-w-0">
-            <p className="font-semibold text-slate-800 truncate">{apt.provider?.firstName} {apt.provider?.lastName}</p>
-            <p className="text-xs text-indigo-600">{apt.provider?.specialty || apt.provider?.role}</p>
+            <p className="font-semibold text-slate-800 dark:text-white truncate">{apt.provider?.firstName} {apt.provider?.lastName}</p>
+            <p className="text-xs text-indigo-600 dark:text-indigo-400">{apt.provider?.specialty || apt.provider?.role}</p>
           </div>
         </div>
         <Badge status={apt.status} />
       </div>
-      <div className="mt-3 flex flex-wrap gap-3 text-xs text-slate-500">
+      <div className="mt-3 flex flex-wrap gap-3 text-xs text-slate-500 dark:text-slate-400">
         <span>📅 {new Date(apt.startTime).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</span>
         <span>🕐 {new Date(apt.startTime).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:true})} – {new Date(apt.endTime).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:true})}</span>
         <span>{apt.consultationType === 'video' ? '📹 Video' : '👨‍⚕️ Physical'}</span>
@@ -1300,9 +1306,9 @@ export default function Dashboard() {
       ) : filteredApts.length > 0 ? (
         <div className="space-y-3">{filteredApts.map(a => <ProviderAptCard key={a.id} apt={a} />)}</div>
       ) : (
-        <div className="text-center py-16 bg-slate-50 rounded-2xl border border-slate-200">
+        <div className="text-center py-16 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">
           <p className="text-4xl mb-3">📭</p>
-          <p className="text-slate-600 font-medium">No appointments in this category</p>
+          <p className="text-slate-600 dark:text-slate-300 font-medium">No appointments in this category</p>
         </div>
       )}
     </div>
@@ -1325,13 +1331,13 @@ export default function Dashboard() {
     return (
       <div className="space-y-5">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">My Schedule</h1>
-          <p className="text-slate-500 mt-1">Upcoming confirmed appointments</p>
+          <h1 className="text-2xl font-bold text-slate-800 dark:text-white">My Schedule</h1>
+          <p className="text-slate-500 dark:text-slate-400 mt-1">Upcoming confirmed appointments</p>
         </div>
         {Object.keys(grouped).length === 0 ? (
-          <div className="text-center py-16 bg-slate-50 rounded-2xl border border-slate-200">
+          <div className="text-center py-16 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">
             <p className="text-4xl mb-3">📅</p>
-            <p className="text-slate-600 font-medium">No upcoming appointments scheduled</p>
+            <p className="text-slate-600 dark:text-slate-300 font-medium">No upcoming appointments scheduled</p>
           </div>
         ) : (
           Object.entries(grouped).map(([date, apts]) => (
@@ -1340,23 +1346,23 @@ export default function Dashboard() {
                 <div className="bg-emerald-600 text-white text-xs font-bold px-3 py-1 rounded-full">
                   {new Date(date).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})}
                 </div>
-                <div className="flex-1 h-px bg-slate-200" />
+                <div className="flex-1 h-px bg-slate-200 dark:bg-slate-700" />
                 <span className="text-xs text-slate-400">{apts.length} appointment{apts.length > 1 ? 's' : ''}</span>
               </div>
               <div className="space-y-3">
                 {apts.map(a => (
-                  <div key={a.id} className="bg-white border border-slate-200 rounded-2xl p-4 flex items-center gap-4">
-                    <div className="text-center bg-emerald-50 rounded-xl px-3 py-2 flex-shrink-0">
-                      <p className="text-sm font-bold text-emerald-700">
+                  <div key={a.id} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 flex items-center gap-4">
+                    <div className="text-center bg-emerald-50 dark:bg-emerald-900/30 rounded-xl px-3 py-2 flex-shrink-0">
+                      <p className="text-sm font-bold text-emerald-700 dark:text-emerald-300">
                         {new Date(a.startTime).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:true})}
                       </p>
-                      <p className="text-xs text-emerald-500 mt-0.5">
+                      <p className="text-xs text-emerald-500 dark:text-emerald-400 mt-0.5">
                         – {new Date(a.endTime).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:true})}
                       </p>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-slate-800">{a.patient?.firstName} {a.patient?.lastName}</p>
-                      <p className="text-xs text-slate-500 mt-0.5">{a.consultationType === 'video' ? '📹 Video Consultation' : '👨‍⚕️ Physical Visit'}</p>
+                      <p className="font-semibold text-slate-800 dark:text-white">{a.patient?.firstName} {a.patient?.lastName}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{a.consultationType === 'video' ? '📹 Video Consultation' : '👨‍⚕️ Physical Visit'}</p>
                       {a.notes && <p className="text-xs text-slate-400 mt-1 truncate">📝 {a.notes}</p>}
                     </div>
                     {a.consultationType === 'video' && a.meetingLink && (
@@ -1379,13 +1385,13 @@ export default function Dashboard() {
   const PatientsTab = () => (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-bold text-slate-800">My Patients</h1>
-        <p className="text-slate-500 mt-1">{uniquePatients.length} patient{uniquePatients.length !== 1 ? 's' : ''} have booked with you</p>
+        <h1 className="text-2xl font-bold text-slate-800 dark:text-white">My Patients</h1>
+        <p className="text-slate-500 dark:text-slate-400 mt-1">{uniquePatients.length} patient{uniquePatients.length !== 1 ? 's' : ''} have booked with you</p>
       </div>
       {uniquePatients.length === 0 ? (
-        <div className="text-center py-16 bg-slate-50 rounded-2xl border border-slate-200">
+        <div className="text-center py-16 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">
           <p className="text-4xl mb-3">👥</p>
-          <p className="text-slate-600 font-medium">No patients yet</p>
+          <p className="text-slate-600 dark:text-slate-300 font-medium">No patients yet</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1393,9 +1399,9 @@ export default function Dashboard() {
             const patientApts = appointments.filter(a => a.patient?.id === p.id)
             const lastApt = patientApts.sort((a,b) => new Date(b.startTime) - new Date(a.startTime))[0]
             return (
-              <div key={p.id} className="bg-white border border-slate-200 rounded-2xl p-5 hover:shadow-md transition">
+              <div key={p.id} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 hover:shadow-md transition">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 font-bold flex-shrink-0">
+                  <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/50 rounded-full flex items-center justify-center text-blue-700 dark:text-blue-300 font-bold flex-shrink-0">
                     {p.firstName?.[0]}{p.lastName?.[0]}
                   </div>
                   <div>
@@ -1502,32 +1508,32 @@ export default function Dashboard() {
   const FindDoctorsTab = () => (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-bold text-slate-800">Find Doctors</h1>
-        <p className="text-slate-500 mt-1">Browse and book verified healthcare professionals</p>
+        <h1 className="text-2xl font-bold text-slate-800 dark:text-white">Find Doctors</h1>
+        <p className="text-slate-500 dark:text-slate-400 mt-1">Browse and book verified healthcare professionals</p>
       </div>
       <div className="relative">
         <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">🔍</span>
         <input type="text" placeholder="Search by name or specialty..." value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
-          className="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+          className="w-full pl-10 pr-4 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-400" />
       </div>
       {loadingProviders ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[1,2,3,4,5,6].map(i => <div key={i} className="h-64 bg-slate-100 rounded-2xl animate-pulse" />)}
+          {[1,2,3,4,5,6].map(i => <div key={i} className="h-64 bg-slate-100 dark:bg-slate-700 rounded-2xl animate-pulse" />)}
         </div>
       ) : filteredProviders.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredProviders.map(p => (
-            <div key={p.id} className="bg-white border border-slate-200 rounded-2xl overflow-hidden hover:shadow-lg transition group">
-              <div className="relative h-40 bg-gradient-to-br from-indigo-100 to-blue-100">
+            <div key={p.id} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden hover:shadow-lg transition group">
+              <div className="relative h-40 bg-gradient-to-br from-indigo-100 to-blue-100 dark:from-indigo-900/50 dark:to-blue-900/50">
                 <img src={p.image} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                <div className="absolute top-3 right-3 bg-white/90 backdrop-blur rounded-full px-2.5 py-1 flex items-center gap-1 text-xs font-semibold text-slate-700 shadow">
+                <div className="absolute top-3 right-3 bg-white/90 dark:bg-slate-800/90 backdrop-blur rounded-full px-2.5 py-1 flex items-center gap-1 text-xs font-semibold text-slate-700 dark:text-slate-200 shadow">
                   ⭐ {p.rating}
                 </div>
               </div>
               <div className="p-4">
                 <h3 className="font-bold text-slate-800 dark:text-white">{p.name}</h3>
-                <p className="text-indigo-600 text-sm font-medium mt-0.5">{p.specialty}</p>
+                <p className="text-indigo-600 dark:text-indigo-400 text-sm font-medium mt-0.5">{p.specialty}</p>
                 <div className="flex gap-3 mt-2 text-xs text-slate-500 dark:text-slate-400">
                   <span>🏅 {p.experience}</span>
                   <span>⚡ {p.responseTime}</span>
@@ -1544,9 +1550,9 @@ export default function Dashboard() {
           ))}
         </div>
       ) : (
-        <div className="text-center py-16 bg-slate-50 rounded-2xl border border-slate-200">
+        <div className="text-center py-16 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">
           <p className="text-4xl mb-3">🔍</p>
-          <p className="text-slate-600 font-medium">No providers found</p>
+          <p className="text-slate-600 dark:text-slate-300 font-medium">No providers found</p>
         </div>
       )}
     </div>
