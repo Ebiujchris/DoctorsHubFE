@@ -5,7 +5,10 @@
   "scripts": {
     "dev": "next dev -p 3000",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "build:cloudflare": "next build && npx @cloudflare/next-on-pages",
+    "preview": "npm run build:cloudflare && wrangler pages dev .vercel/output/static --compatibility-date=2024-04-09",
+    "deploy": "npm run build:cloudflare && wrangler pages deploy .vercel/output/static"
   },
   "dependencies": {
     "next": "^16.1.6",
@@ -14,8 +17,10 @@
     "socket.io-client": "^4.8.3"
   },
   "devDependencies": {
+    "@cloudflare/next-on-pages": "^1.13.5",
     "autoprefixer": "^10.4.14",
     "postcss": "^8.4.21",
-    "tailwindcss": "^3.4.7"
+    "tailwindcss": "^3.4.7",
+    "wrangler": "^3.78.12"
   }
 }

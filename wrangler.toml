@@ -1,0 +1,23 @@
+# Cloudflare Workers configuration for Next.js app
+name = "doctors-hub-frontend"
+compatibility_date = "2024-04-09"
+compatibility_flags = ["nodejs_compat"]
+
+# Pages configuration
+pages_build_output_dir = ".vercel/output/static"
+
+# Environment variables (set these in Cloudflare dashboard)
+[env.production.vars]
+NEXT_PUBLIC_API_URL = "https://your-backend-domain.com"
+
+[env.preview.vars]
+NEXT_PUBLIC_API_URL = "https://your-backend-staging.com"
+
+# Build configuration
+[build]
+command = "npm run build"
+cwd = "."
+
+# Node.js compatibility
+[build.environment_variables]
+NODE_VERSION = "18"
