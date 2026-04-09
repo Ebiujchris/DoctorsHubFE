@@ -1023,10 +1023,10 @@ export default function Dashboard() {
             <span>{upcoming.consultationType === 'video' ? '📹 Video' : '👨‍⚕️ Physical'}</span>
           </div>
           {upcoming.consultationType === 'video' && upcoming.meetingLink && (
-            <a href={upcoming.meetingLink} target="_blank" rel="noopener noreferrer"
+            <button onClick={() => router.push(`/consultation/${upcoming.id}`)}
               className="mt-4 inline-flex items-center gap-2 bg-white text-indigo-700 font-semibold px-5 py-2 rounded-xl hover:bg-indigo-50 transition text-sm">
               📹 Join Video Call
-            </a>
+            </button>
           )}
         </div>
       ) : (
@@ -1201,10 +1201,10 @@ export default function Dashboard() {
       {!compact && (
         <div className="mt-4 flex flex-wrap gap-2">
           {apt.status === 'confirmed' && apt.consultationType === 'video' && apt.meetingLink && (
-            <a href={apt.meetingLink} target="_blank" rel="noopener noreferrer"
+            <button onClick={() => router.push(`/consultation/${apt.id}`)}
               className="px-4 py-1.5 bg-green-600 text-white text-xs font-semibold rounded-lg hover:bg-green-700 transition">
               📹 Join Call
-            </a>
+            </button>
           )}
           {(apt.status === 'pending' || apt.status === 'confirmed') && (
             <button onClick={() => handleCancel(apt.id)} disabled={cancellingId === apt.id}
@@ -1261,10 +1261,10 @@ export default function Dashboard() {
         </div>
       )}
       {!compact && apt.status === 'confirmed' && apt.consultationType === 'video' && apt.meetingLink && (
-        <a href={apt.meetingLink} target="_blank" rel="noopener noreferrer"
+        <button onClick={() => router.push(`/consultation/${apt.id}`)}
           className="mt-4 inline-flex items-center gap-1.5 px-4 py-1.5 bg-green-600 text-white text-xs font-semibold rounded-lg hover:bg-green-700 transition">
           📹 Join Call
-        </a>
+        </button>
       )}
     </div>
   )
@@ -1360,10 +1360,10 @@ export default function Dashboard() {
                       {a.notes && <p className="text-xs text-slate-400 mt-1 truncate">📝 {a.notes}</p>}
                     </div>
                     {a.consultationType === 'video' && a.meetingLink && (
-                      <a href={a.meetingLink} target="_blank" rel="noopener noreferrer"
+                      <button onClick={() => router.push(`/consultation/${a.id}`)}
                         className="flex-shrink-0 px-3 py-1.5 bg-emerald-600 text-white text-xs font-semibold rounded-lg hover:bg-emerald-700 transition">
                         Join
-                      </a>
+                      </button>
                     )}
                   </div>
                 ))}
