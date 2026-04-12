@@ -83,17 +83,25 @@ function ChatTab({ userId, isProvider, appointments, onUnreadChange }) {
     setSocket(s)
 
     s.on('newMessage', (msg) => {
-      setMessages(prev => prev.find(m => m.id === msg.id) ? prev : [...prev, msg])
-      setUnread(prev => {
-        if (activeConvRef.current?.id === msg.senderId) return prev
-        const next = { ...prev, [msg.senderId]: (prev[msg.senderId] || 0) + 1 }
-        const total = Object.values(next).reduce((a, b) => a + b, 0)
-        onUnreadChange?.(total)
-        return next
-      })
-      // pulse the conversation row — stays until opened
-      if (activeConvRef.current?.id !== msg.senderId) {
-        setNewMsgFrom(prev => ({ ...prev, [msg.senderId]: true }))
+      // Only add message to current conversation if it's relevant
+      if (activeConvRef.current?.id === msg.senderId || activeConvRef.current?.id === msg.receiverId) {
+        setMessages(prev => prev.find(m => m.id === msg.id) ? prev : [...prev, msg])
+      }
+      
+      // Only show unread notification if message is FROM someone else TO current user
+      if (msg.senderId !== userId) {
+        setUnread(prev => {
+          // Don't increment if this conversation is currently active and visible
+          if (activeConvRef.current?.id === msg.senderId) return prev
+          const next = { ...prev, [msg.senderId]: (prev[msg.senderId] || 0) + 1 }
+          const total = Object.values(next).reduce((a, b) => a + b, 0)
+          onUnreadChange?.(total)
+          return next
+        })
+        // pulse the conversation row — stays until opened
+        if (activeConvRef.current?.id !== msg.senderId) {
+          setNewMsgFrom(prev => ({ ...prev, [msg.senderId]: true }))
+        }
       }
     })
     s.on('typing', ({ senderId, isTyping }) => {
@@ -2187,7 +2195,7 @@ export default function Dashboard() {
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <TopBar />
         <main className="flex-1 overflow-y-auto p-4 sm:p-6">
-          <div className="max-w-4xl mx-auto">
+          <div className="w-full max-w-none">
             {tabContent[tab] || (isProvider ? <ProviderOverview /> : <PatientOverview />)}
           </div>
         </main>
