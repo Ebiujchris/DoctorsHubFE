@@ -2,21 +2,62 @@
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
 
-// Fetch popular specialties - can be hardcoded or fetched from backend
+// Fetch popular specialties with real counts from backend
 export const fetchSpecialties = async () => {
   try {
-    return [
-      { id: 1, name: 'General Practitioner', icon: '🩺', count: 324 },
-      { id: 2, name: 'Cardiologist', icon: '❤️', count: 187 },
-      { id: 3, name: 'Psychiatrist', icon: '🧠', count: 256 },
-      { id: 4, name: 'Dentist', icon: '🦷', count: 412 },
-      { id: 5, name: 'Nurse', icon: '💉', count: 289 },
-      { id: 6, name: 'Home Carer', icon: '🏠', count: 156 }
-    ]
+    const response = await fetch(`${API_BASE}/users/specialties/counts`)
+    
+    if (!response.ok) {
+      // If API fails, return basic specialties without counts
+      console.warn('Specialties API not available, using fallback data')
+      return [
+        { id: 1, name: 'General Practitioner', icon: '🩺', count: null },
+        { id: 2, name: 'Cardiologist', icon: '❤️', count: null },
+        { id: 3, name: 'Psychiatrist', icon: '🧠', count: null },
+        { id: 4, name: 'Dentist', icon: '🦷', count: null },
+        { id: 5, name: 'Nurse', icon: '💉', count: null },
+        { id: 6, name: 'Home Carer', icon: '🏠', count: null }
+      ]
+    }
+    
+    const data = await response.json()
+    
+    // Transform backend data to match frontend expectations
+    return data.map((specialty, index) => ({
+      id: specialty.id || index + 1,
+      name: specialty.name,
+      icon: getSpecialtyIcon(specialty.name),
+      count: specialty.count || 0
+    }))
   } catch (error) {
     console.error('Error fetching specialties:', error)
-    throw error
+    // Return fallback data without counts
+    return [
+      { id: 1, name: 'General Practitioner', icon: '🩺', count: null },
+      { id: 2, name: 'Cardiologist', icon: '❤️', count: null },
+      { id: 3, name: 'Psychiatrist', icon: '🧠', count: null },
+      { id: 4, name: 'Dentist', icon: '🦷', count: null },
+      { id: 5, name: 'Nurse', icon: '💉', count: null },
+      { id: 6, name: 'Home Carer', icon: '🏠', count: null }
+    ]
   }
+}
+
+// Helper function to get icon for specialty
+const getSpecialtyIcon = (specialtyName) => {
+  const iconMap = {
+    'General Practitioner': '🩺',
+    'Cardiologist': '❤️',
+    'Psychiatrist': '🧠',
+    'Dentist': '🦷',
+    'Nurse': '💉',
+    'Home Carer': '🏠',
+    'Dermatologist': '✨',
+    'Orthopedist': '🦴',
+    'Pediatrician': '👶',
+    'Eye Specialist': '👁️'
+  }
+  return iconMap[specialtyName] || '🩺'
 }
 
 // Fetch featured doctors from backend
@@ -151,83 +192,48 @@ export const fetchFeaturedDoctors_Combined = async () => {
   }
 }
 
-// Search doctors/nurses/carers by specialty - Updated: 2024-04-09
+// Search doctors/nurses/carers by specialty - Updated to use real API
 export const searchDoctors = async (specialty) => {
   try {
-    console.log('🔍 [NEW VERSION] Searching for specialty:', specialty)
+    console.log('🔍 Searching for specialty:', specialty)
     
     if (!specialty) {
       throw new Error('Specialty is required')
     }
 
-    // TEMPORARY: Use mock data since backend endpoints aren't ready
-    const mockProviders = [
-      {
-        id: 1,
-        name: 'Dr. Sarah Johnson',
-        specialty: 'General Practitioner',
-        rating: 4.8,
-        reviews: 127,
-        image: 'https://i.pravatar.cc/150?img=1',
-        experience: '8 years',
-        responseTime: '< 1 hour'
-      },
-      {
-        id: 2,
-        name: 'Dr. Michael Chen',
-        specialty: 'Cardiologist',
-        rating: 4.9,
-        reviews: 89,
-        image: 'https://i.pravatar.cc/150?img=2',
-        experience: '12 years',
-        responseTime: '< 2 hours'
-      },
-      {
-        id: 3,
-        name: 'Dr. Emily Rodriguez',
-        specialty: 'Psychiatrist',
-        rating: 4.7,
-        reviews: 156,
-        image: 'https://i.pravatar.cc/150?img=3',
-        experience: '6 years',
-        responseTime: '< 30 minutes'
-      },
-      {
-        id: 4,
-        name: 'Dr. James Wilson',
-        specialty: 'Dentist',
-        rating: 4.6,
-        reviews: 203,
-        image: 'https://i.pravatar.cc/150?img=4',
-        experience: '15 years',
-        responseTime: '< 4 hours'
-      },
-      {
-        id: 5,
-        name: 'Nurse Lisa Thompson',
-        specialty: 'Nurse',
-        rating: 4.9,
-        reviews: 78,
-        image: 'https://i.pravatar.cc/150?img=5',
-        experience: '5 years',
-        responseTime: '< 1 hour'
-      },
-      {
-        id: 6,
-        name: 'Maria Garcia',
-        specialty: 'Home Carer',
-        rating: 4.8,
-        reviews: 45,
-        image: 'https://i.pravatar.cc/150?img=6',
-        experience: '3 years',
-        responseTime: '< 2 hours'
+    // Try to fetch from real backend API first
+    try {
+      const response = await fetch(`${API_BASE}/users/search?specialty=${encodeURIComponent(specialty)}`)
+      
+      if (response.ok) {
+        const providers = await response.json()
+        
+        // Transform backend data to match frontend expectations
+        return providers.map(provider => ({
+          id: provider.id,
+          name: `${provider.firstName} ${provider.lastName}`,
+          specialty: provider.specialty || provider.role,
+          rating: provider.rating || 4.8,
+          reviews: provider.reviews || 0,
+          image: provider.profilePicture || `https://i.pravatar.cc/150?img=${Math.random() * 50}`,
+          experience: provider.experience || 'N/A',
+          responseTime: provider.responseTime || '< 2 hours',
+          bio: provider.bio,
+          phone: provider.phone,
+          email: provider.email,
+          isVerified: provider.isVerified
+        }))
       }
-    ]
+    } catch (apiError) {
+      console.warn('Backend search API not available:', apiError.message)
+    }
 
-    console.log('👥 Using mock providers:', mockProviders.length)
+    // Fallback: Use featured providers and filter by specialty
+    console.log('🔄 Using fallback search with featured providers')
+    const allProviders = await fetchFeaturedDoctors_Combined()
     
     // Filter by specialty (case-insensitive partial match)
-    const filtered = mockProviders.filter(provider => {
+    const filtered = allProviders.filter(provider => {
       const providerSpecialty = (provider.specialty || '').toLowerCase()
       const searchSpecialty = specialty.toLowerCase()
       const matches = providerSpecialty.includes(searchSpecialty) || 
@@ -238,7 +244,7 @@ export const searchDoctors = async (specialty) => {
       return matches
     })
 
-    console.log('✅ Filtered results:', filtered.length, filtered)
+    console.log('✅ Search results:', filtered.length, 'providers found')
     return filtered
   } catch (error) {
     console.error('❌ Error searching providers:', error)

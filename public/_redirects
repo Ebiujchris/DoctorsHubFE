@@ -1,5 +1,0 @@
-# Client-side routing fallback
-/* /index.html 200
-
-# API redirects (if needed)
-/api/* https://your-backend-domain.com/api/:splat 200

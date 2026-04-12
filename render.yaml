@@ -1,0 +1,44 @@
+# Render deployment configuration for DoctorsHub
+services:
+  # Backend (NestJS API)
+  - type: web
+    name: doctorshub-backend
+    env: node
+    buildCommand: cd DoctorsHubBE && npm install && npm run build
+    startCommand: cd DoctorsHubBE && npm run start:prod
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      # Add your database and other backend env vars here
+      - key: DATABASE_URL
+        sync: false  # Set this in Render dashboard
+      - key: JWT_SECRET
+        sync: false  # Set this in Render dashboard
+      - key: GOOGLE_CLIENT_ID
+        sync: false  # Set this in Render dashboard
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false  # Set this in Render dashboard
+
+  # Frontend (Next.js)
+  - type: web
+    name: doctorshub-frontend
+    env: node
+    buildCommand: cd DoctorsHubFE && npm install && npm run build
+    startCommand: cd DoctorsHubFE && npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          type: web
+          name: doctorshub-backend
+          property: host
+      # Add your frontend env vars here
+      - key: NEXT_PUBLIC_GOOGLE_CLIENT_ID
+        sync: false  # Set this in Render dashboard

@@ -9,23 +9,10 @@ const nextConfig = {
     NEXT_PUBLIC_GOOGLE_CLIENT_ID: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
   },
   
-  // Image optimization for Cloudflare
+  // Image optimization
   images: {
     domains: ['i.pravatar.cc', 'images.unsplash.com'],
     formats: ['image/webp', 'image/avif'],
-  },
-  
-  // Webpack configuration
-  webpack: (config, { isServer }) => {
-    if (!isServer) {
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        fs: false,
-        net: false,
-        tls: false,
-      }
-    }
-    return config
   },
   
   // Headers for security and performance
